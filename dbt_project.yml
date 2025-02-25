@@ -43,6 +43,7 @@ models:
       core:
           materialized: table
 vars:
+  is_test_run: false
   payment_type_values: [1, 2, 3, 4, 5, 6]
 
 seeds: 

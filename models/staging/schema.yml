@@ -8,6 +8,7 @@ sources:
     tables:
       - name: green_tripdata
       - name: yellow_tripdata
+      - name: ext_fhv_taxi  # Added FHV table source
          # freshness:
            # error_after: {count: 6, period: hour}
 
@@ -65,7 +66,7 @@ models:
           - name: Store_and_fwd_flag 
             description: > 
               This flag indicates whether the trip record was held in vehicle
-              memory before sending to the vendor, aka “store and forward,”
+              memory before sending to the vendor, aka "store and forward,"
               because the vehicle did not have a connection to the server.
                 Y= store and forward trip
                 N = not a store and forward trip
@@ -157,7 +158,7 @@ models:
           - name: Store_and_fwd_flag 
             description: > 
               This flag indicates whether the trip record was held in vehicle
-              memory before sending to the vendor, aka “store and forward,”
+              memory before sending to the vendor, aka "store and forward,"
               because the vehicle did not have a connection to the server.
                 Y= store and forward trip
                 N= not a store and forward trip
@@ -194,3 +195,41 @@ models:
             description: Total amount of all tolls paid in trip.
           - name: Total_amount 
             description: The total amount charged to passengers. Does not include cash tips.
+    
+    - name: stg_fhv_tripdata
+      description: >
+        Trips made by For-Hire Vehicles (FHV) in NYC.
+        For-Hire Vehicles include community livery, black car, and luxury limousine services.
+        The records were collected and provided to the NYC Taxi and Limousine Commission (TLC).
+      columns:
+          - name: tripid
+            description: Primary key for this table, generated with a concatenation of dispatching_base_num and pickup_datetime
+            tests:
+                - unique:
+                    severity: warn
+                - not_null:
+                    severity: warn
+          - name: dispatching_base_num
+            description: The TLC Base License Number of the base that dispatched the trip
+          - name: pickup_datetime
+            description: The date and time of the pickup
+          - name: dropoff_datetime
+            description: The date and time of the dropoff
+          - name: pickup_locationid
+            description: TLC Taxi Zone where the trip began
+            tests:
+              - relationships:
+                  to: ref('taxi_zone_lookup')
+                  field: locationid
+                  severity: warn
+          - name: dropoff_locationid
+            description: TLC Taxi Zone where the trip ended
+            tests:
+              - relationships:
+                  to: ref('taxi_zone_lookup')
+                  field: locationid
+                  severity: warn
+          - name: sr_flag
+            description: Indicates if the trip was a shared ride
+          - name: affiliated_base_number
+            description: The TLC Base License Number of the base that is affiliated with the dispatching base
