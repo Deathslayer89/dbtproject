@@ -196,7 +196,7 @@ models:
           - name: Total_amount 
             description: The total amount charged to passengers. Does not include cash tips.
     
-    - name: stg_fhv_tripdata
+    - name: stg_fhv_taxi
       description: >
         Trips made by For-Hire Vehicles (FHV) in NYC.
         For-Hire Vehicles include community livery, black car, and luxury limousine services.
